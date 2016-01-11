@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"sort"
 )
-import "reflect"
-import "encoding/json"
-import "strings"
+import (
+	"encoding/json"
+	"reflect"
+	"strings"
+)
 
 func quicksort(a []T, low int, high int) {
 	if low >= high {
@@ -55,37 +57,6 @@ func descquicksort(a []T, low int, high int) {
 
 }
 
-func datatrans(arr []T) {
-	for i, v := range arr {
-		switch reflect.TypeOf(v).Kind() {
-		case reflect.Int:
-			{
-				arr[i] = float64(v.(int))
-				break
-			}
-		case reflect.Int64:
-			{
-				arr[i] = float64(v.(int64))
-				break
-			}
-		case reflect.Float32:
-			{
-				arr[i] = float64(v.(float32))
-				break
-			}
-		case reflect.Float64:
-			{
-				arr[i] = float64(v.(float64))
-				break
-			}
-		default:
-			{
-				arr[i] = v
-			}
-		}
-
-	}
-}
 func maxs(a, b int) int {
 	return b&((a-b)>>31) | a&^((a-b)>>31)
 }
@@ -199,8 +170,12 @@ func ascsort(field string, arr []T) []T {
 						if s != "" && s != "null" {
 							ss := strings.Split(s[1:len(s)-1], " ")
 							sort.Strings(ss)
-
-							m.(map[string]interface{})[field] = ss
+							ii, err := interface2float(ss)
+							if err != nil {
+								m.(map[string]interface{})[field] = ss
+							} else {
+								m.(map[string]interface{})[field] = ii
+							}
 							var jv T
 							j, _ := json.Marshal(m)
 							jv = string(j)

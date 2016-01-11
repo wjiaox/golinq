@@ -12,6 +12,11 @@ func Test_linq(t *testing.T) {
 		return s.(float64) > 4, nil
 	}).OrderBy("", "asc")
 
+	val = From(a...).Where("", func(s T) (bool, error) {
+		return s.(float64) > 4, nil
+	}).OrderBy("", "asc")
+	t.Log("test:", val, val.Average())
+
 	t.Log("test:", val)
 	a = []T{1, 2, 9.3, 32, 3, 4, 5, 6, 4.2, 8}
 	val = From(a...).OrderBy("", "asc")
@@ -21,6 +26,7 @@ func Test_linq(t *testing.T) {
 	val = From(a...).OrderBy("", "asc")
 
 	t.Log("test:", val)
+
 }
 
 type student struct {
@@ -30,36 +36,29 @@ type student struct {
 
 func Test_Select(t *testing.T) {
 
-	var ss = []student{
-		{"John", 80},
-		{"Tony", 90},
-		{"Lily", 88},
-		{"Jenny", 87},
-		{"Jenny", 98},
-		{"Tom", 78},
+	var ss = []T{
+		student{"John", 80},
+		student{"Tony", 90},
+		student{"Lily", 88},
+		student{"Jenny", 87},
+		student{"Jenny", 98},
+		student{"Tom", 78},
 	}
-	var si = make([]T, len(ss))
-	for i, v := range ss {
-		si[i] = v
-	}
-	var val = From(si...).Where("grade", func(s T) (bool, error) {
-		return s.(float64) > 86, nil
-	})
-	//	var val = From(ss).Where("", func(s T) (bool, error) {
-	//		return s.(student).grade > 86, nil
-	//	}).Select(func(s T) (T, error) {
-	//		return s.(student).name, nil
-	//	}).Result()
+	//	var si = make([]T, len(ss))
+	//	for i, v := range ss {
+	//		si[i] = v
+	//	}
+	var val = From(ss...).AverageByField("grade")
 	t.Log("test jval:", val.Jval)
 	t.Log("test values:", val.Values)
 
-	val = From(si...).Where("grade", func(s T) (bool, error) {
+	val = From(ss...).Where("grade", func(s T) (bool, error) {
 		return s.(float64) > 86, nil
 	}).OrderBy("name", "asc")
 	t.Log("test jval:", val.Jval)
 	t.Log("test values:", val.Values)
 
-	val = From(si...).Where("grade", func(s T) (bool, error) {
+	val = From(ss...).Where("grade", func(s T) (bool, error) {
 		return s.(float64) > 86, nil
 	}).OrderBy("grade", "asc")
 	t.Log("test jval:", val.Jval)
@@ -69,16 +68,16 @@ func Test_Select(t *testing.T) {
 
 type student2 struct {
 	Name   string
-	Grades []int
+	Grades []float64
 }
 
 func Test_SelectMany(t *testing.T) {
 	ss := []student2{
-		{"John", []int{78, 84, 83, 89, 75}},
-		{"Tony", []int{60, 76, 83, 71, 77}},
-		{"Lily", []int{97, 84, 83, 89, 87}},
-		{"Jenny", []int{88, 80, 83, 88, 77}},
-		{"Tom", []int{90, 96, 98, 99, 89}},
+		{"John", []float64{78, 84, 83, 89, 75}},
+		{"Tony", []float64{60, 76.4, 83, 71, 77}},
+		{"Lily", []float64{97, 84, 83, 89, 87}},
+		{"Jenny", []float64{88, 80, 83, 88.5, 77}},
+		{"Tom", []float64{90, 96.3, 98, 99, 89}},
 	}
 	var si = make([]T, len(ss))
 	for i, v := range ss {
@@ -86,7 +85,7 @@ func Test_SelectMany(t *testing.T) {
 	}
 	var val = From(si...).Where("Grades", func(s T) (bool, error) {
 		return s.(float64) > 86, nil
-	})
+	}).AverageByField("Grades")
 
 	//var val = From(ss)
 	t.Log("test jval:", val.Jval)
@@ -108,7 +107,7 @@ func Test_SelectMany(t *testing.T) {
 
 func Test_mytest(t *testing.T) {
 	var val = student2{
-		"John", []int{78, 84, 83, 89, 75},
+		"John", []float64{78, 84, 83, 89, 75},
 	}
 	if reflect.TypeOf(val).Kind() == reflect.Struct {
 		t.Log("ok")
