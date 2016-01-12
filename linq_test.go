@@ -7,11 +7,18 @@ import (
 )
 
 func Test_linq(t *testing.T) {
-	a := []T{1, 2, 9.01, 32, 3, 4.2, 4, 5, 6, 7, 8}
+
+	a := []T{
+		[]float64{1, 2, 9.01},
+		[]float64{32, 3, 4.2},
+		[]float64{4, 5, 6, 7, 8},
+	}
 	var val = From(a...).Where("", func(s T) (bool, error) {
 		return s.(float64) > 4, nil
-	}).OrderBy("", "asc")
+	})
+	t.Log("test: ", val, val.Average(), val.OrderBy("", "asc"))
 
+	a = []T{1, 2, 9.01, 32, 3, 4.2, 4, 5, 6, 7, 8}
 	val = From(a...).Where("", func(s T) (bool, error) {
 		return s.(float64) > 4, nil
 	}).OrderBy("", "asc")
@@ -44,11 +51,14 @@ func Test_Select(t *testing.T) {
 		student{"Jenny", 98},
 		student{"Tom", 78},
 	}
-	//	var si = make([]T, len(ss))
-	//	for i, v := range ss {
-	//		si[i] = v
-	//	}
 	var val = From(ss...).AverageByField("grade")
+	t.Log("test jval:", val.Jval)
+	t.Log("test values:", val.Values)
+
+	val = From(ss...).Where("grade", func(s T) (bool, error) {
+		return s.(float64) > 86, nil
+	})
+	val.Select("name")
 	t.Log("test jval:", val.Jval)
 	t.Log("test values:", val.Values)
 
@@ -87,7 +97,6 @@ func Test_SelectMany(t *testing.T) {
 		return s.(float64) > 86, nil
 	}).AverageByField("Grades")
 
-	//var val = From(ss)
 	t.Log("test jval:", val.Jval)
 	t.Log("test values:", val.Values)
 	val = From(si...).Where("Name", func(s T) (bool, error) {

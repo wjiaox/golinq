@@ -133,9 +133,36 @@ func unitiysort(s4c, s4r []string, val interface{}, v T) ([]string, []string) {
 
 func ascsort(field string, arr []T) []T {
 	t4a := reflect.TypeOf(arr[0]).Kind()
+
+	//common sort for []num
 	if field == "" && (t4a == reflect.Int || t4a == reflect.Float64 || t4a == reflect.Float32) {
 		datatrans(arr)
 		quicksort(arr, 0, len(arr)-1)
+		//method sort for [][]num
+	} else if field == "" && t4a == reflect.Slice {
+		var s4c = make([]string, 1)
+		var s4r = make([]string, 1)
+		for _, v := range arr {
+			err := datatrans(v.([]T))
+			if err == nil {
+				quicksort(v.([]T), 0, len(v.([]T))-1)
+				s := fmt.Sprintf("%v", v)
+				if s != "" {
+					ss := strings.Split(s, " ")
+					s4c, s4r = unitiysort(s4c, s4r, ss[0], s)
+				}
+			} else {
+				return nil
+			}
+
+		}
+		arr = make([]T, len(s4r))
+		for i := 0; i < len(s4r); i++ {
+			arr[i] = s4r[i]
+		}
+		//fmt.Println("arr:", arr)
+
+		//method sort for []string
 	} else if field == "" && t4a == reflect.String {
 		t := make([]string, len(arr))
 		for i, v := range arr {
@@ -145,6 +172,8 @@ func ascsort(field string, arr []T) []T {
 		for i, v := range t {
 			arr[i] = v
 		}
+
+		//method sort for []struct
 	} else if field != "" && t4a == reflect.String {
 		var m interface{}
 		var s4c = make([]string, 1)
@@ -210,8 +239,6 @@ func ascsort(field string, arr []T) []T {
 		for i := 0; i < len(s4r); i++ {
 			arr[i] = s4r[i]
 		}
-		fmt.Println("arr:", arr)
-
 	}
 	return arr
 }

@@ -15,6 +15,11 @@ func datatrans(arr []T) error {
 				arr[i] = float64(v.(int))
 				break
 			}
+		case reflect.Int32:
+			{
+				arr[i] = float64(v.(int32))
+				break
+			}
 		case reflect.Int64:
 			{
 				arr[i] = float64(v.(int64))
@@ -33,7 +38,7 @@ func datatrans(arr []T) error {
 		default:
 			{
 				arr[i] = v
-				err = errors.New("not int!")
+				err = errors.New("not num!")
 			}
 		}
 
