@@ -27,6 +27,7 @@ func getarray(t ...T) ([]string, []T, error) {
 		v4v := reflect.ValueOf(v)
 		t4v := reflect.TypeOf(v)
 		temp := make(map[string]interface{})
+
 		if t4v.Kind() == reflect.Struct {
 			for j := 0; j < t4v.NumField(); j++ {
 				k4v := v4v.Field(j).Type().Kind()
@@ -34,6 +35,8 @@ func getarray(t ...T) ([]string, []T, error) {
 					temp[t4v.Field(j).Name] = v4v.Field(j).String()
 				} else if k4v == reflect.Int {
 					temp[t4v.Field(j).Name] = v4v.Field(j).Int()
+				} else if k4v == reflect.Float32 || k4v == reflect.Float64 {
+					temp[t4v.Field(j).Name] = v4v.Field(j).Float()
 				} else if k4v == reflect.Slice {
 					temp[t4v.Field(j).Name] = v4v.Field(j).Interface()
 				}
@@ -177,8 +180,41 @@ func (q *Query) OrderBy(field, method string) *Query {
 	return q
 }
 
-//group
-func (q *Query) GroupBy() *Query {
+//group by
+func (q *Query) GroupBy(tag string) *Query {
+	if q.Kind != reflect.Struct {
+		return q
+	}
+	var vals []T
+	var m interface{}
+	if q.Values == nil && q.Jval != nil {
+		for _, v := range q.Jval {
+			vals = append(vals, v)
+		}
+	} else {
+		vals = q.Values
+	}
+	var s4c = make([]string, 1)
+	var s4r = make([]string, 1)
+	for _, v := range vals {
+		err := json.Unmarshal([]byte(v.(string)), &m)
+		if err != nil {
+			q.Err = err
+			return q
+		}
+		if val, ok := m.(map[string]interface{})[tag]; ok {
+			sval := fmt.Sprintf("%v", val)
+			// that's not a prefect method to group
+			// that's a method of sort , compare by string that i use to group the data just for convenient
+			s4c, s4r = unitiysort(s4c, s4r, sval, v)
+		}
+	}
+	vals = make([]T, len(s4r))
+	for i := 0; i < len(s4r); i++ {
+		vals[i] = s4r[i]
+	}
+	q.Values = vals
+
 	return q
 }
 
