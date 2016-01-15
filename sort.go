@@ -66,23 +66,25 @@ func minis(a, b int) int {
 func stringcompare(a, b string) bool {
 	var c = false
 	if a != "" && b != "" {
-		a = strings.ToLower(a)
-		b = strings.ToLower(b)
-		l := minis(len(a), len(b))
-		for i := 0; i < l; i++ {
-			if int(a[i]) > int(b[i]) {
-				c = true
-				break
-			} else if int(a[i]) < int(b[i]) {
-				c = false
-				break
-			} else if a[i] == b[i] {
-				continue
-			}
-
+		//		a = strings.ToLower(a)
+		//		b = strings.ToLower(b)
+		//		l := minis(len(a), len(b))
+		//		for i := 0; i < l; i++ {
+		//			if int(a[i]) > int(b[i]) {
+		//				c = true
+		//				break
+		//			} else if int(a[i]) < int(b[i]) {
+		//				c = false
+		//				break
+		//			} else if a[i] == b[i] {
+		//				continue
+		//			}
+		//		}
+		if a >= b {
+			return true
+		} else {
+			return false
 		}
-	} else {
-		c = true
 	}
 	return c
 
