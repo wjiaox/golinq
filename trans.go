@@ -2,39 +2,24 @@ package linq
 
 import (
 	"errors"
-	"reflect"
+	"fmt"
 	"strconv"
 )
 
 func datatrans(arr []T) error {
 	var err error
 	for i, v := range arr {
-		switch reflect.TypeOf(v).Kind() {
-		case reflect.Int:
+		switch v.(type) {
+		case uint8, uint16, uint32, uint64, int, int8, int32, int64, float32, float64:
 			{
-				arr[i] = float64(v.(int))
+				var f float64
+
+				fmt.Sscanf(fmt.Sprintf("%v", v), "%v", &f)
+				fmt.Println("test:", fmt.Sprintf("%v", v), f)
+				arr[i] = f
 				break
 			}
-		case reflect.Int32:
-			{
-				arr[i] = float64(v.(int32))
-				break
-			}
-		case reflect.Int64:
-			{
-				arr[i] = float64(v.(int64))
-				break
-			}
-		case reflect.Float32:
-			{
-				arr[i] = float64(v.(float32))
-				break
-			}
-		case reflect.Float64:
-			{
-				arr[i] = float64(v.(float64))
-				break
-			}
+
 		default:
 			{
 				arr[i] = v
